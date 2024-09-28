@@ -55,10 +55,10 @@ export const InputForm = () => {
 
   return (
     <>
-      <div className="border rounded-lg p-6 shadow-sm mt-10">
+      <div className="border rounded-lg p-4 shadow-sm mt-1">
         <h2 className="text-2xl">Shopify Plus Cost Comparison</h2>
         <h4 className="mb-5 text-sm">
-          Check your saving when you migrate from Shopify Plus Plan to Medusa
+          Check saving when you migrate from Shopify Plus Plan to Medusa
         </h4>
         {showForm ? (
           <Form {...form}>
