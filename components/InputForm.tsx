@@ -15,7 +15,7 @@ import {
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useFormState } from "react-dom";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { onDataAction } from "@/app/actions";
 import { schema } from "@/lib/types";
 import { DollarSign } from "lucide-react";
@@ -48,9 +48,10 @@ export const InputForm = () => {
     }
   }, [state.message]);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     setShowForm(true);
-  };
+    form.reset();
+  }, [form]);
 
   return (
     <>
@@ -61,11 +62,6 @@ export const InputForm = () => {
         </h4>
         {showForm ? (
           <Form {...form}>
-            {/* {state?.message !== "" && !state.errors && (
-            <div className="text-sm font-medium text-green-500">
-              {state.message}
-            </div>
-          )} */}
             {state?.message !== "" && state.errors && (
               <div className="text-sm font-medium text-destructive">
                 {state.message}
@@ -74,13 +70,14 @@ export const InputForm = () => {
             <form
               ref={formRef}
               action={formAction}
-              onSubmit={(evt) => {
-                evt.preventDefault();
-                form.handleSubmit(() => {
-                  console.log("called form submit");
-                  formRef.current?.submit();
-                })(evt);
-              }}
+              // onSubmit={(evt) => {
+              //   console.log(evt);
+              //   evt.preventDefault();
+              //   form.handleSubmit(() => {
+              //     console.log("called form submit");
+              //     formRef.current?.submit();
+              //   })(evt);
+              // }}
               className="space-y-2"
             >
               <div className="flex gap-2">
@@ -106,7 +103,7 @@ export const InputForm = () => {
                   )}
                 />
               </div>
-              <div className="flex gap-2">
+              <div className="md:flex gap-2">
                 <FormField
                   control={form.control}
                   name="orders"
@@ -143,7 +140,7 @@ export const InputForm = () => {
                   )}
                 />
               </div>
-              <div className="flex gap-2">
+              <div className="md:flex gap-2">
                 <FormField
                   control={form.control}
                   name="transaction_fee"
@@ -185,7 +182,7 @@ export const InputForm = () => {
                   )}
                 />
               </div>
-              <div className="flex gap-2">
+              <div className="md:flex gap-2">
                 <FormField
                   control={form.control}
                   name="nos_apps"
@@ -240,11 +237,11 @@ export const InputForm = () => {
               nos_apps={Number(state.fields?.nos_apps)}
               total_app_cost={Number(state.fields?.total_app_cost)}
             />
-            <p className="text-2">
+            {/* <p className="text-2">
               If you want to discuss how you can achieve this saving click on
               the button below
             </p>
-            <Button className="w-full">I want to discuss migration</Button>
+            <Button className="w-full">I want to discuss migration</Button> */}
             <Button onClick={handleBack}>Back</Button>
           </div>
         ) : null}
