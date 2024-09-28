@@ -57,7 +57,7 @@ export const InputForm = () => {
     <>
       <div className="border rounded-lg p-6 shadow-sm mt-10">
         <h2 className="text-2xl">Shopify Plus Cost Comparison</h2>
-        <h4 className="mb-5">
+        <h4 className="mb-5 text-sm">
           Check your saving when you migrate from Shopify Plus Plan to Medusa
         </h4>
         {showForm ? (
@@ -70,14 +70,14 @@ export const InputForm = () => {
             <form
               ref={formRef}
               action={formAction}
-              // onSubmit={(evt) => {
-              //   console.log(evt);
-              //   evt.preventDefault();
-              //   form.handleSubmit(() => {
-              //     console.log("called form submit");
-              //     formRef.current?.submit();
-              //   })(evt);
-              // }}
+              onSubmit={(evt) => {
+                // console.log(evt);
+                evt.preventDefault();
+                form.handleSubmit(() => {
+                  // console.log("called form submit");
+                  formRef.current?.submit();
+                })(evt);
+              }}
               className="space-y-2"
             >
               <div className="flex gap-2">
