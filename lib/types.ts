@@ -3,13 +3,13 @@ import { z } from "zod";
 
 export const schema = z.object({
   shopify_fees: z.coerce.number().min(299, {
-    message: "Shopify Plus Cost is required",
+    message: "Shopify Cost cannot be less than $299",
   }),
-  orders: z.coerce.number().min(500, {
-    message: "Monthly Orders is required",
+  orders: z.coerce.number().min(10, {
+    message: "Monthly Orders cannot be less than 10",
   }),
-  avg_order_value: z.coerce.number().min(1, {
-    message: "Avg Order Value is required",
+  avg_order_value: z.coerce.number().min(10, {
+    message: "Avg Order Value cannot be less than $10",
   }),
   transaction_fee: z.coerce.number().min(0, {
     message: "Transaction Fee is required",
@@ -17,11 +17,11 @@ export const schema = z.object({
   order_growth: z.coerce.number().min(0, {
     message: "Order Growth is required",
   }),
-  nos_apps: z.coerce.number().min(1, {
+  nos_apps: z.coerce.number().min(0, {
     message: "Nos of Apps is required",
   }),
-  total_app_cost: z.coerce.number().min(20, {
-    message: "App Cost is required",
+  total_app_cost: z.coerce.number().min(0, {
+    message: "App Cost cannot be less than 0",
   }),
 });
 
