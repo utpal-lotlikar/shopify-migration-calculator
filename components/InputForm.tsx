@@ -6,7 +6,6 @@ import { z } from "zod";
 import {
   Form,
   FormControl,
-  //   FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -14,18 +13,16 @@ import {
 } from "./ui/form";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { useFormState } from "react-dom";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { onDataAction } from "@/app/actions";
+import { useCallback, useState } from "react";
 import { schema } from "@/lib/types";
 import { DollarSign } from "lucide-react";
 import { ShopifyCostBarChart } from "./ShopifyCostBarChart";
+import { inputStore } from "@/lib/store";
 
 export const InputForm = () => {
-  const initialState = { message: "" };
-  const [state, formAction] = useFormState(onDataAction, initialState);
   const [showForm, setShowForm] = useState(true);
-  const formRef = useRef<HTMLFormElement>(null);
+  const setFormData = inputStore((state) => state.setFormData);
+  const resetFormData = inputStore((state) => state.reset);
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
@@ -37,21 +34,27 @@ export const InputForm = () => {
       order_growth: 10,
       nos_apps: 10,
       total_app_cost: 500,
-      ...(state?.fields ?? {}),
     },
-    errors: state.errors,
   });
 
-  useEffect(() => {
-    if (state.message) {
-      setShowForm(false);
-    }
-  }, [state.message]);
+  function onSubmit(values: z.infer<typeof schema>) {
+    setFormData(
+      values.shopify_fees,
+      values.orders,
+      values.avg_order_value,
+      values.transaction_fee,
+      values.order_growth,
+      values.nos_apps,
+      values.total_app_cost
+    );
+    setShowForm(false);
+  }
 
   const handleBack = useCallback(() => {
     setShowForm(true);
+    resetFormData();
     form.reset();
-  }, [form]);
+  }, [form, resetFormData]);
 
   return (
     <>
@@ -62,24 +65,7 @@ export const InputForm = () => {
         </h4>
         {showForm ? (
           <Form {...form}>
-            {state?.message !== "" && state.errors && (
-              <div className="text-sm font-medium text-destructive">
-                {state.message}
-              </div>
-            )}
-            <form
-              ref={formRef}
-              action={formAction}
-              onSubmit={(evt) => {
-                // console.log(evt);
-                evt.preventDefault();
-                form.handleSubmit(() => {
-                  // console.log("called form submit");
-                  formRef.current?.submit();
-                })(evt);
-              }}
-              className="space-y-2"
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
               <div className="flex gap-2">
                 <FormField
                   control={form.control}
@@ -97,7 +83,6 @@ export const InputForm = () => {
                           />
                         </div>
                       </FormControl>
-                      {/* <FormDescription>Shopify Plus monthly fees</FormDescription> */}
                       <FormMessage />
                     </FormItem>
                   )}
@@ -113,7 +98,6 @@ export const InputForm = () => {
                       <FormControl>
                         <Input type="number" min="0" {...field} />
                       </FormControl>
-                      {/* <FormDescription>Monthly orders</FormDescription> */}
                       <FormMessage />
                     </FormItem>
                   )}
@@ -134,7 +118,6 @@ export const InputForm = () => {
                           />
                         </div>
                       </FormControl>
-                      {/* <FormDescription>Average value of orders</FormDescription> */}
                       <FormMessage />
                     </FormItem>
                   )}
@@ -156,7 +139,6 @@ export const InputForm = () => {
                           {...field}
                         />
                       </FormControl>
-                      {/* <FormDescription>Rate of transaction fee</FormDescription> */}
                       <FormMessage />
                     </FormItem>
                   )}
@@ -223,20 +205,9 @@ export const InputForm = () => {
               <Button type="submit">Calculate My Savings</Button>
             </form>
           </Form>
-        ) : state?.message ? (
+        ) : (
           <div className="space-y-4">
-            {/* <div className="p-4 bg-green-100 text-green-700 rounded-md">
-            {state.message}
-          </div> */}
-            <ShopifyCostBarChart
-              shopify_fees={Number(state.fields?.shopify_fees)}
-              orders={Number(state.fields?.orders)}
-              avg_order_value={Number(state.fields?.avg_order_value)}
-              transaction_fee={Number(state.fields?.transaction_fee)}
-              order_growth={Number(state.fields?.order_growth)}
-              nos_apps={Number(state.fields?.nos_apps)}
-              total_app_cost={Number(state.fields?.total_app_cost)}
-            />
+            <ShopifyCostBarChart />
             {/* <p className="text-2">
               If you want to discuss how you can achieve this saving click on
               the button below
@@ -244,7 +215,7 @@ export const InputForm = () => {
             <Button className="w-full">I want to discuss migration</Button> */}
             <Button onClick={handleBack}>Back</Button>
           </div>
-        ) : null}
+        )}
       </div>
     </>
   );

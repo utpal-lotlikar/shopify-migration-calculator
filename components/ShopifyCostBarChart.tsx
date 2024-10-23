@@ -6,7 +6,6 @@ import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import {
   Card,
   CardContent,
-  // CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -17,7 +16,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { ShopifyCostData } from "@/lib/types";
+import { inputStore } from "@/lib/store";
 
 export const description = "A multiple bar chart";
 
@@ -84,14 +83,14 @@ function calculateMedusaCost(shopify_cost: number) {
   return annualCosts;
 }
 
-export function ShopifyCostBarChart({
-  shopify_fees,
-  orders,
-  avg_order_value,
-  transaction_fee,
-  order_growth,
-  total_app_cost,
-}: ShopifyCostData) {
+export function ShopifyCostBarChart() {
+  const shopify_fees = inputStore((state) => state.shopify_fees);
+  const orders = inputStore((state) => state.orders);
+  const avg_order_value = inputStore((state) => state.avg_order_value);
+  const transaction_fee = inputStore((state) => state.transaction_fee);
+  const order_growth = inputStore((state) => state.order_growth);
+  const total_app_cost = inputStore((state) => state.total_app_cost);
+
   const shopifyAnnualCosts = calculateShopifyCost(
     shopify_fees,
     orders,
@@ -101,6 +100,17 @@ export function ShopifyCostBarChart({
     total_app_cost
   );
   const medusaAnnualCosts = calculateMedusaCost(shopifyAnnualCosts[0]);
+
+  const totalShopifyCost = shopifyAnnualCosts.reduce(
+    (accumulator, currentValue) => accumulator + currentValue,
+    0
+  );
+  const totalMedusaCost = medusaAnnualCosts.reduce(
+    (accumulator, currentValue) => accumulator + currentValue,
+    0
+  );
+  const savingsPercentage =
+    ((totalShopifyCost - totalMedusaCost) / totalShopifyCost) * 100;
 
   const chartData = [
     {
@@ -134,7 +144,6 @@ export function ShopifyCostBarChart({
     <Card>
       <CardHeader>
         <CardTitle>Shopify Vs Medusa Expenses</CardTitle>
-        {/* <CardDescription>January - June 2024</CardDescription> */}
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -157,8 +166,9 @@ export function ShopifyCostBarChart({
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 font-medium leading-none">
-          You will save <b className="font-semibold">67.2%</b> over next 5 years{" "}
-          <TrendingUp className="h-4 w-4" />
+          You will save{" "}
+          <b className="font-semibold">${savingsPercentage.toFixed(2)}%</b> over
+          next 5 years <TrendingUp className="h-4 w-4" />
         </div>
       </CardFooter>
     </Card>

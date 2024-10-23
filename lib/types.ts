@@ -31,7 +31,7 @@ export type ShopifyCostState = {
   message?: string | null;
 };
 
-export type ShopifyCostData = {
+export interface FormDataState {
   shopify_fees: number;
   orders: number;
   avg_order_value: number;
@@ -39,4 +39,16 @@ export type ShopifyCostData = {
   order_growth: number;
   nos_apps: number;
   total_app_cost: number;
+
+  setFormData: (
+    shopify_fees: number,
+    orders: number,
+    avg_order_value: number,
+    transaction_fee: number,
+    order_growth: number,
+    nos_apps: number,
+    total_app_cost: number
+  ) => void;
+
+  reset: () => void;
 }
